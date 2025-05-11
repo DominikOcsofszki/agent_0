@@ -4,7 +4,7 @@ from typing import Annotated
 
 from typing_extensions import TypedDict
 
-from langgraph.graph import StateGraph, START
+from langgraph.graph import END, StateGraph, START
 from langgraph.graph.message import add_messages
 
 from agents import helper_graph
@@ -27,19 +27,26 @@ async def build_graph():
 
     client = await get_mcp_client_from_json(mcp_json_file)
     tools = client.get_tools()
+    # print(tools)
 
     llm_with_tools = llm.bind_tools(tools)
+    # print(llm.invoke("ASD"))
+    print(llm_with_tools.invoke("ASD"))
+    exit()
 
     def chatbot(state: State):
         return {"messages": [llm.invoke(state["messages"])]}
 
-    def chatbot_rag(state: State):
+    def chatbot_with_tools(state: State):
         return {"messages": [llm_with_tools.invoke(state["messages"])]}
 
-    graph_builder.add_node("chatbot", chatbot)
-    graph_builder.add_node("chatbot_rag", chatbot_rag)
+    # graph_builder.add_node("chatbot", chatbot)
+    graph_builder.add_node("chatbot_with_tools", chatbot_with_tools)
 
-    graph_builder.add_edge(START, "chatbot")
+    # graph_builder.add_edge(START, "chatbot")
+    # graph_builder.add_edge("chatbot", "chatbot_with_tools")
+    graph_builder.add_edge(START, "chatbot_with_tools")
+    graph_builder.add_edge("chatbot_with_tools", END)
     graph = graph_builder.compile()
     # run_graph(graph)
     return graph
@@ -48,6 +55,7 @@ async def build_graph():
 async def run():
     graph = await build_graph()
     helper_graph.run_graph(graph)
+    # helper_graph.show_graph(graph)
 
 
 if __name__ == "__main__":
