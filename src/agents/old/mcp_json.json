@@ -1,0 +1,16 @@
+{
+	"math": {
+		"command": "python",
+		"args": [
+"/Users/dominik/2025/GPT/mcp/agents/src/agents/tools/mcp_add.py"
+		],
+		"transport": "stdio"
+	},
+	"rest": {
+		"command": "python",
+		"args": [
+"/Users/dominik/2025/GPT/mcp/agents/src/agents/tools/mcp_mul.py"
+		],
+		"transport": "stdio"
+	}
+}
